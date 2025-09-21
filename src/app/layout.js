@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "./provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,7 +23,12 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+         <header className="bg-blue-600 text-white p-4 text-xl font-bold text-center">
+            HousieHub
+          </header>
+        <Providers >
         {children}
+        </Providers>
       </body>
     </html>
   );
