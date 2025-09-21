@@ -8,7 +8,11 @@ export default function Play() {
   const numbers = Array.from({ length: 90 }, (_, i) => i + 1);
 
   if (!ticket) {
-    return <p className="text-center mt-20">⚠️ No ticket found. Go to Join Room first.</p>;
+    return (
+      <div className="text-center mt-20">
+        <p>⚠️ No ticket found. Go to <a href="/join-room" className="text-blue-600 underline">Join Room</a> first.</p>
+      </div>
+    );
   }
 
   return (
@@ -55,11 +59,25 @@ export default function Play() {
           </div>
         ))}
       </div>
+     
 
       {gameWon && (
+        <>
         <p className="mt-6 text-2xl font-bold text-green-600 text-center">
           🎉 Congratulations! You WON!
         </p>
+
+        <div className="flex gap-4 mt-6 justify-center">
+        <a
+          href="/join-room"
+          className="px-6 py-3 bg-blue-500 text-white rounded-lg"
+        >
+          Go to Join Room
+        </a>
+      </div>
+        
+        </>
+        
       )}
     </div>
   );
