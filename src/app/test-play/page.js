@@ -22,21 +22,50 @@ export default function PlayPage() {
         setCalledNumbers(data.calledNumbers || []);
         setWinner(data.winnerId || null);
 
-        // Match player's ticket from backend if not stored locally
         const player = data.players.find((p) => p.userId === saved.userId);
-        if (player?.ticket) setTicket(player.ticket);
-        else setTicket(saved.ticket || []);
-
+        setTicket(player?.ticket || saved.ticket || []);
         setLoading(false);
-      } catch (e) {
-        console.error("Failed to fetch room:", e);
+      } catch (err) {
+        console.error("fetchRoom failed:", err);
         setLoading(false);
       }
     }
 
     fetchRoom();
-  }, []);
 
+    // 🔁 handle reconnect and rejoin
+    function handleConnect() {
+      console.log("✅ Socket reconnected:", socket.id);
+      const saved = JSON.parse(localStorage.getItem("playerData"));
+      if (!saved) return;
+      socket.emit("joinRoom", {
+        roomId: saved.roomId,
+        userId: saved.userId,
+        name: saved.name,
+        ticket: saved.ticket,
+      });
+    }
+
+    socket.on("connect", handleConnect);
+    handleConnect(); // first join immediately
+
+    socket.on("numberCalled", (num) =>
+      setCalledNumbers((prev) => (prev.includes(num) ? prev : [...prev, num]))
+    );
+
+    socket.on("gameOver", ({ winnerId, name }) => {
+      const saved = JSON.parse(localStorage.getItem("playerData"));
+      if (winnerId === saved.userId) alert("🎉 You won!");
+      else alert(`🏆 ${name || "Someone"} won.`);
+      setWinner(winnerId);
+    });
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("numberCalled");
+      socket.off("gameOver");
+    };
+  }, []);
   // Socket event listeners
   useEffect(() => {
     if (!room?.id) return;
