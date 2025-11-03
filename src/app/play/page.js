@@ -75,9 +75,7 @@ export default function Play() {
           Go to Join Room
         </a>
       </div>
-        
         </>
-        
       )}
     </div>
   );

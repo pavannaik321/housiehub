@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { socket } from "../../../lib/socket";
+import { useRouter } from "next/navigation";
 
 export default function PlayPage() {
   const [calledNumbers, setCalledNumbers] = useState([]);
@@ -8,6 +9,7 @@ export default function PlayPage() {
   const [ticket, setTicket] = useState(null);
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Fetch the current room data from backend when page loads or reloads
   useEffect(() => {
@@ -16,7 +18,7 @@ export default function PlayPage() {
 
     async function fetchRoom() {
       try {
-        const res = await fetch(`http://localhost:4000/api/rooms/${saved.roomId}`);
+        const res = await fetch(`https://housiehub-admin.vercel.app/api/rooms/${saved.roomId}`);
         const data = await res.json();
         setRoom(data);
         setCalledNumbers(data.calledNumbers || []);
@@ -92,6 +94,15 @@ export default function PlayPage() {
     };
   }, [room?.id]);
 
+  const handleExitGame = () => {
+    const saved = JSON.parse(localStorage.getItem("playerData"));
+    if (saved?.roomId) {
+      socket.emit("leaveRoom", { roomId: saved.roomId });
+    }
+    localStorage.removeItem("playerData");
+    router.push("/rooms");
+  };
+
   const isCalled = (num) => calledNumbers.includes(num);
 
   if (loading) {
@@ -159,9 +170,17 @@ export default function PlayPage() {
 
       {/* Winner Display */}
       {winner ? (
-        <div className="text-2xl text-green-600 font-bold animate-bounce">
-          🎉 Winner: {winner}
-        </div>
+     <div className="flex flex-col items-center gap-4">
+     <div className="text-2xl text-green-600 font-bold animate-bounce">
+       🎉 Winner: {winner}
+     </div>
+     <button
+       onClick={handleExitGame}
+       className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+     >
+       Back to Rooms
+     </button>
+   </div>
       ) : (
         <p className="text-gray-600 text-lg">Game in progress...</p>
       )}
