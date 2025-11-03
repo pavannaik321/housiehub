@@ -11,7 +11,7 @@ export default function RoomsPage() {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await fetch("https://housiehub-admin.vercel.app/api/rooms"); // backend API
+        const res = await fetch("https://housiehub-admin.onrender.com/api/rooms"); // backend API
         const data = await res.json();
         setRooms(data);
       } catch (e) {

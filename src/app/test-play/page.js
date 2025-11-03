@@ -18,7 +18,7 @@ export default function PlayPage() {
 
     async function fetchRoom() {
       try {
-        const res = await fetch(`https://housiehub-admin.vercel.app/api/rooms/${saved.roomId}`);
+        const res = await fetch(`https://housiehub-admin.onrender.com/api/rooms/${saved.roomId}`);
         const data = await res.json();
         setRoom(data);
         setCalledNumbers(data.calledNumbers || []);
